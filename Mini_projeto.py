@@ -73,8 +73,28 @@ print(df[df.duplicated(keep=False)].head(10))
 
 print("\nRegistros antes da remoção:", len(df))
 
-print("\nRegistros antes da remoção:", len(df))
-
 df = df.drop_duplicates()
 
 print("Registros após a remoção:", len(df))
+
+
+#Estatísticas descritivas
+print("\nEstatísticas do número de filhos:")
+print("Média:", df["CL_FHL"].mean())
+print("Mediana:", df["CL_FHL"].median())
+print("Desvio padrão:", df["CL_FHL"].std())
+print("Moda:", df["CL_FHL"].mode()[0])
+print("Máximo:", df["CL_FHL"].max())
+print("Mínimo:", df["CL_FHL"].min())
+print("Contagem:", df["CL_FHL"].count())
+print("\nResumo estatístico:")
+print(df["CL_FHL"].describe())
+
+print("\nQuantidade de registros por gênero:")
+print(df.groupby("CL_GENERO").size())
+
+print("\nQuantidade de registros por categoria:")
+print(df.groupby("PR_CAT").size().sort_values(ascending=False))
+
+print("\nQuantidade de registros por gênero e categoria:")
+print(df.groupby(["CL_GENERO", "PR_CAT"]).size())
