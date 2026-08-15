@@ -54,3 +54,27 @@ print("\nValores da coluna número de filhos:")
 print(df["CL_FHL"].value_counts(dropna=False).sort_index())
 print("\nMenor número de filhos:", df["CL_FHL"].min())
 print("Maior número de filhos:", df["CL_FHL"].max())
+
+#nulos e duplicados
+print("\nValores nulos por coluna:")
+print(df.isna().sum())
+
+df = df.drop(columns=["Unnamed: 10", "Unnamed: 11", "Unnamed: 12", "Unnamed: 13"])
+
+df["PR_CAT"] = df["PR_CAT"].replace("#N/D", "NAO INFORMADO")
+print("\nCategorias após tratamento:")
+print(df["PR_CAT"].value_counts())
+
+print("\nQuantidade de registros duplicados:")
+print(df.duplicated().sum())
+
+print("\nExemplos de registros duplicados:")
+print(df[df.duplicated(keep=False)].head(10))
+
+print("\nRegistros antes da remoção:", len(df))
+
+print("\nRegistros antes da remoção:", len(df))
+
+df = df.drop_duplicates()
+
+print("Registros após a remoção:", len(df))
