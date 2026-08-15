@@ -1,7 +1,4 @@
-import matplotlib.pyplot as plt
-import numpy as np  
 import pandas as pd
-import seaborn as sns 
 
 # Carregando a base de dados e informações iniciais
 df = pd.read_csv("Base Varejo.csv", sep=";")
