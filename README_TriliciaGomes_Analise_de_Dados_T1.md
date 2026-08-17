@@ -1,35 +1,42 @@
-# 📊 Mini-projeto — Análise de Dados de Varejo
+# 📊 Mini-projeto — Análise Exploratória de Dados de Varejo
 
 ## 📌 Sobre o projeto
 
-Este projeto foi desenvolvido como parte do curso de **Análise de Dados**, com o objetivo de aplicar conceitos de **manipulação, limpeza e análise exploratória de dados utilizando Python e Pandas**.
+Este mini-projeto foi desenvolvido como parte do curso de **Análise de Dados**, com o objetivo de aplicar conceitos de manipulação, limpeza, transformação e análise exploratória de dados utilizando **Python**.
 
-A análise foi realizada a partir da base **Base Varejo.csv**, contendo informações relacionadas a clientes, compras e produtos.
+A análise foi realizada a partir da base `Base Varejo.csv`, contendo informações relacionadas a clientes, compras e produtos.
 
-O projeto contempla desde a importação e identificação de problemas de qualidade dos dados até a geração de estatísticas descritivas, agrupamentos e principais insights obtidos a partir da base tratada.
+O projeto contempla a leitura estruturada do arquivo CSV, validação de regras de negócio, identificação e tratamento de problemas de qualidade, conversão de tipos, remoção de duplicatas, geração de estatísticas descritivas, análises por agrupamento e apresentação dos principais insights encontrados.
 
 ---
 
 ## 🎯 Objetivos
 
-* Importar e explorar a base de dados;
-* Identificar valores nulos, duplicatas e inconsistências;
-* Realizar limpeza e padronização dos dados;
-* Converter e ajustar tipos de dados;
-* Calcular estatísticas descritivas;
-* Explorar padrões utilizando agrupamentos;
-* Gerar uma base limpa para análises posteriores;
-* Apresentar os principais insights encontrados.
+Os principais objetivos do projeto são:
+
+- Realizar a leitura e exploração da base de dados;
+- Utilizar leitura estruturada de arquivos CSV;
+- Identificar valores nulos, duplicatas e possíveis inconsistências;
+- Realizar limpeza e padronização dos dados;
+- Converter e ajustar tipos de dados;
+- Validar o identificador das compras;
+- Aplicar estruturas condicionais no tratamento dos dados;
+- Calcular estatísticas descritivas;
+- Explorar padrões utilizando agrupamentos;
+- Gerar uma base limpa para análises posteriores;
+- Apresentar os principais insights encontrados.
 
 ---
 
 ## 🛠️ Tecnologias utilizadas
 
-* **Python**
-* **Pandas**
-* **VS Code**
-* **Git**
-* **GitHub**
+- **Python**
+- **Pandas**
+- **Módulo CSV (`csv.DictReader`)**
+- **Módulo Datetime**
+- **VS Code**
+- **Git**
+- **GitHub**
 
 ---
 
@@ -37,117 +44,242 @@ O projeto contempla desde a importação e identificação de problemas de quali
 
 ### 1. Importação e exploração inicial
 
-A base foi carregada utilizando a biblioteca **Pandas**.
+Inicialmente, foi realizada a leitura estruturada do arquivo utilizando o módulo nativo `csv` do Python e o método `csv.DictReader`.
 
-Inicialmente foram analisados:
+O `DictReader` permite interpretar cada registro do arquivo CSV como um dicionário, utilizando os nomes das colunas como chaves.
 
-* Número de registros;
-* Número e nome das colunas;
-* Tipos de dados;
-* Primeiros registros;
-* Informações gerais da base.
+Em seguida, a base foi carregada em um DataFrame utilizando a biblioteca **Pandas**, possibilitando a realização das etapas de tratamento e análise exploratória.
+
+Na exploração inicial foram analisados:
+
+- Número de registros;
+- Número de colunas;
+- Nome das colunas;
+- Tipos de dados;
+- Primeiros registros;
+- Informações gerais da base.
 
 A base original possuía **830.000 registros**.
 
 ---
 
-### 2. Limpeza e transformação dos dados
+### 2. Validação do identificador de compra
 
-Foram realizados tratamentos para melhorar a qualidade e a consistência dos dados.
+A coluna `CO_ID` foi analisada para compreender a regra de identificação das compras.
 
-Os principais procedimentos realizados foram:
+Foram encontrados **18.471 identificadores de compra distintos** na base original.
 
-* Conversão da coluna `DATA` para o tipo `datetime`;
-* Verificação de possíveis datas inválidas;
-* Padronização dos nomes dos produtos;
-* Remoção de espaços excedentes utilizando métodos de string e expressão regular;
-* Verificação dos valores da variável de número de filhos;
-* Padronização dos registros `#N/D` da categoria de produtos para `NAO INFORMADO`.
+Durante a análise foi observado que um mesmo `CO_ID` pode aparecer em várias linhas. Isso ocorre porque uma compra pode estar associada a diferentes registros de produtos.
+
+Dessa forma, a quantidade de linhas da base não deve ser interpretada diretamente como quantidade de compras.
+
+Os registros foram agrupados utilizando `CO_ID`, permitindo separar e visualizar os itens pertencentes a uma mesma compra.
+
+Essa validação foi importante para compreender a estrutura da base antes da realização das análises.
 
 ---
 
-### 3. Tratamento de valores nulos e duplicatas
+### 3. Limpeza, transformação e padronização
+
+Foram realizados tratamentos com o objetivo de melhorar a qualidade e a consistência dos dados.
+
+Entre os principais procedimentos realizados estão:
+
+- Conversão da coluna `DATA`;
+- Identificação de possíveis datas inválidas;
+- Verificação dos valores das colunas categóricas;
+- Padronização dos nomes dos produtos;
+- Remoção de espaços excedentes;
+- Padronização dos textos da coluna `PR_NOME` para letras maiúsculas;
+- Verificação dos valores da variável `CL_FHL`, referente ao número de filhos.
+
+Para a padronização dos nomes dos produtos foram utilizados métodos de manipulação de strings e expressão regular, reduzindo possíveis diferenças causadas por espaços excedentes ou variações na escrita.
+
+---
+
+### 4. Tratamento e conversão de datas
+
+A coluna `DATA`, originalmente armazenada como texto, foi convertida para um formato adequado de data utilizando o módulo nativo `datetime` do Python.
+
+A conversão foi realizada utilizando:
+
+`datetime.strptime()`
+
+O formato esperado para os registros foi definido como:
+
+`%d/%m/%Y`
+
+que representa **dia/mês/ano**.
+
+Foi utilizada uma estrutura `try/except` para permitir o tratamento de valores que não pudessem ser convertidos para uma data válida.
+
+Caso um registro apresente uma data inválida, o valor é convertido para `None`, permitindo posteriormente sua identificação como valor ausente.
+
+Após a conversão, foi realizada uma verificação da quantidade de datas inválidas presentes na base.
+
+Esse tratamento permite que a coluna seja utilizada corretamente em futuras análises temporais.
+
+---
+
+### 5. Tratamento de valores nulos e categorias
 
 Durante a análise foram identificadas quatro colunas completamente vazias:
 
-* `Unnamed: 10`
-* `Unnamed: 11`
-* `Unnamed: 12`
-* `Unnamed: 13`
+- `Unnamed: 10`
+- `Unnamed: 11`
+- `Unnamed: 12`
+- `Unnamed: 13`
 
-Como essas colunas apresentavam **100% de valores nulos** e não possuíam informações relevantes para a análise, elas foram removidas.
+Como essas colunas não continham informações que pudessem ser utilizadas na análise, optou-se pela remoção, evitando imputar valores sem fundamento.
 
-Também foram identificados **96.553 registros duplicados exatos**.
+Na coluna `PR_CAT`, também foram identificados registros sem uma categoria válida.
 
-Após a remoção das duplicatas, a base passou de:
+Para realizar o tratamento foi criada uma função utilizando uma estrutura condicional `if/else`.
 
-**830.000 registros → 733.447 registros**
+Foram considerados como categoria ausente:
+
+- Valores nulos;
+- Valores vazios;
+- Registros identificados como `#N/D`.
+
+Esses registros foram classificados como:
+
+`Sem Categoria`
+
+A escolha por manter esses registros como `Sem Categoria`, em vez de excluí-los ou atribuí-los a uma categoria existente, evita a perda de informações e a criação de classificações sem evidência nos dados originais.
 
 ---
 
-### 4. Estatística descritiva
+### 6. Tratamento de duplicatas
+
+Durante a análise da qualidade dos dados foram identificados **96.553 registros duplicados exatos**.
+
+Antes da remoção, a base possuía:
+
+**830.000 registros**
+
+Após a remoção das duplicatas, a base passou a possuir:
+
+**733.447 registros**
+
+Isso representa aproximadamente **11,63% dos registros da base original**.
+
+Antes da exclusão, foram visualizados exemplos dos registros duplicados para verificar a ocorrência do problema.
+
+Posteriormente, as duplicatas exatas foram removidas, preservando uma ocorrência de cada registro.
+
+---
+
+### 7. Estatística descritiva
 
 Foi realizada uma análise estatística da coluna `CL_FHL`, referente ao **número de filhos do cliente**.
 
 Foram calculados:
 
-* Média;
-* Mediana;
-* Moda;
-* Desvio padrão;
-* Valor mínimo;
-* Valor máximo;
-* Contagem;
-* Quartis.
+- Média;
+- Mediana;
+- Moda;
+- Desvio padrão;
+- Valor mínimo;
+- Valor máximo;
+- Contagem;
+- Primeiro quartil (25%);
+- Segundo quartil (50%);
+- Terceiro quartil (75%).
 
-Os resultados mostraram uma média de aproximadamente **1,15 filho**, enquanto a mediana encontrada foi **0**.
+Os principais resultados encontrados foram:
 
-Também foi observado que **75% dos registros apresentam até 2 filhos**.
+- **Média:** aproximadamente 1,15;
+- **Mediana:** 0;
+- **Moda:** 0;
+- **Mínimo:** 0;
+- **Máximo:** 4;
+- **Terceiro quartil (75%):** 2.
+
+A diferença entre média e mediana indica uma concentração dos registros nos valores mais baixos.
+
+A moda igual a `0` demonstra que esse é o número de filhos que aparece com maior frequência nos registros analisados.
+
+O terceiro quartil igual a `2` indica que **75% dos registros apresentam número de filhos igual ou inferior a 2**.
 
 ---
 
-### 5. Análises por agrupamento
+### 8. Análises por agrupamento
 
-Foram utilizados agrupamentos com o método `groupby()` do Pandas para identificar padrões presentes na base.
+Para explorar padrões presentes na base foram realizados agrupamentos utilizando o método `groupby()` do Pandas.
 
-As análises realizadas foram:
+Foram analisadas diferentes combinações.
 
-#### Quantidade de registros por gênero
+#### Registros por gênero
 
 Após a limpeza da base:
 
-* **Feminino:** 382.427 registros
-* **Masculino:** 351.020 registros
+- **Feminino:** 382.427 registros;
+- **Masculino:** 351.020 registros.
 
-#### Quantidade de registros por categoria de produto
+Os resultados mostram uma quantidade ligeiramente maior de registros associados ao gênero feminino.
 
-A categoria **ALIMENTOS** apresentou a maior quantidade de registros, seguida por **HIGIENE** e **LIMPEZA**.
+#### Registros por categoria de produto
 
-Também foi realizado um agrupamento combinando **gênero e categoria de produto**, permitindo observar a distribuição das categorias entre os dois grupos.
+As categorias com maior quantidade de registros foram:
+
+1. **ALIMENTOS**
+2. **HIGIENE**
+3. **LIMPEZA**
+
+A categoria `ALIMENTOS` apresentou uma quantidade de registros significativamente superior às demais.
+
+#### Gênero e categoria de produto
+
+Também foi realizado um agrupamento combinando as variáveis `CL_GENERO` e `PR_CAT`.
+
+Essa análise permitiu observar como os registros das diferentes categorias de produtos estão distribuídos entre os gêneros presentes na base.
 
 ---
 
 ## 💡 Principais insights
 
-1. A base original apresentava problemas relevantes de qualidade, incluindo **quatro colunas completamente vazias** e **96.553 registros duplicados**.
+1. A base original apresentava problemas de qualidade, incluindo **quatro colunas completamente vazias** e **96.553 registros duplicados exatos**.
 
-2. Após a limpeza, a base passou de **830.000 para 733.447 registros**, eliminando duplicatas exatas e informações sem utilidade analítica.
+2. As duplicatas representavam aproximadamente **11,63% da base original**, reduzindo a base de **830.000 para 733.447 registros** após o tratamento.
 
-3. A distribuição do número de filhos apresenta concentração nos valores mais baixos. A **mediana é 0**, enquanto **75% dos registros possuem até 2 filhos**.
+3. Na variável número de filhos, a **média é aproximadamente 1,15**, enquanto a **mediana e a moda são iguais a 0**, indicando concentração dos registros nos valores mais baixos.
 
-4. O gênero feminino apresenta maior quantidade de registros na base tratada, com **382.427 registros**, comparados a **351.020 registros** do gênero masculino.
+4. Os registros associados ao gênero feminino aparecem em maior quantidade na base tratada, com **382.427 registros**, em comparação com **351.020 registros** associados ao gênero masculino.
 
 5. **ALIMENTOS** é a categoria com maior quantidade de registros, seguida por **HIGIENE** e **LIMPEZA**.
 
-6. Registros originalmente classificados como `#N/D` foram preservados como `NAO INFORMADO`, evitando excluir informações ou atribuir categorias sem evidências.
+6. Foram encontrados registros sem uma categoria válida. Esses valores foram preservados como `Sem Categoria`, evitando excluir registros ou atribuir categorias sem evidência nos dados originais.
 
 ---
 
 ## ⚠️ Limitações da análise
 
-A base não possui informações de **preço ou valor financeiro das transações**. Dessa forma, os agrupamentos realizados representam principalmente quantidades de registros, não sendo possível determinar diretamente quais grupos ou categorias geraram maior receita.
+A base não apresenta informações de **preço ou valor financeiro das transações**. Dessa forma, os agrupamentos realizados representam quantidades de registros e não permitem determinar diretamente quais categorias ou grupos geraram maior receita.
 
-Além disso, alguns produtos permanecem classificados como `NAO INFORMADO`, pois a base original não fornece informações suficientes para determinar corretamente suas categorias.
+Também existem registros classificados como `Sem Categoria`, pois as informações disponíveis na base original não permitem determinar com segurança a categoria correta desses produtos.
+
+Além disso, como um mesmo cliente pode aparecer em diferentes registros da base, as estatísticas da coluna `CL_FHL` representam a distribuição dessa variável entre os **registros analisados**, e não necessariamente entre clientes únicos.
+
+Da mesma forma, uma compra pode possuir vários registros. Por esse motivo, a quantidade de linhas da base não representa diretamente a quantidade de compras realizadas.
+
+---
+
+## 🔄 Reflexão sobre ETL e qualidade dos dados
+
+O processo de **ETL (Extract, Transform, Load)** representa três etapas importantes no trabalho com dados: extração, transformação e carregamento.
+
+Neste projeto, a etapa de **extração (Extract)** ocorreu por meio da leitura dos dados presentes no arquivo `Base Varejo.csv`, utilizando `csv.DictReader` e Pandas.
+
+A etapa de **transformação (Transform)** envolveu a identificação e o tratamento de problemas encontrados na base, incluindo valores nulos, categorias não identificadas, registros duplicados, padronização de textos, validação do identificador das compras e conversão das datas.
+
+A etapa de **carregamento (Load)** foi representada pela exportação dos dados tratados para um novo arquivo denominado `df_limpo.csv`.
+
+A realização dessas etapas demonstrou a importância da **qualidade dos dados** para uma análise confiável. Dados duplicados, ausentes ou inconsistentes podem interferir nos resultados e levar a interpretações incorretas.
+
+Um dos principais aprendizados do projeto foi compreender que a limpeza dos dados não deve ser realizada de maneira automática. Antes de excluir, substituir ou transformar uma informação, é necessário entender o que ela representa e avaliar o impacto da decisão sobre a análise.
+
+Por esse motivo, as quatro colunas completamente vazias foram removidas, enquanto os registros sem categoria válida foram preservados como `Sem Categoria`. Dessa forma, buscou-se manter o máximo de informação possível sem criar dados que não estavam presentes na base original.
 
 ---
 
@@ -157,17 +289,17 @@ Além disso, alguns produtos permanecem classificados como `NAO INFORMADO`, pois
 Mini-projeto/
 │
 ├── Base Varejo.csv
-├── main.py
+├── Mini_projeto.py
 ├── df_limpo.csv
 └── README.md
 ```
 
 ### Descrição dos arquivos
 
-* `Base Varejo.csv` — base original utilizada no projeto;
-* `main.py` — script Python responsável pela limpeza e análise exploratória;
-* `df_limpo.csv` — base resultante após o tratamento dos dados;
-* `README.md` — documentação do projeto.
+- `Base Varejo.csv` — base original utilizada no projeto;
+- `Mini_projeto.py` — script responsável pela leitura, limpeza, transformação e análise exploratória;
+- `df_limpo.csv` — base resultante após o tratamento dos dados;
+- `README.md` — documentação do projeto.
 
 ---
 
@@ -194,10 +326,10 @@ pip install pandas
 ### 4. Execute o script
 
 ```bash
-python main.py
+python Mini_projeto.py
 ```
 
-Ao final da execução, o script apresenta os resultados da análise no terminal e gera o arquivo:
+Ao final da execução, o script apresenta no terminal o relatório da análise e gera o arquivo:
 
 ```text
 df_limpo.csv
@@ -205,12 +337,12 @@ df_limpo.csv
 
 ---
 
-## 📝 Reflexão
+## 📝 Considerações finais
 
-O desenvolvimento deste mini-projeto permitiu aplicar na prática diferentes etapas de uma **Análise Exploratória de Dados (EDA)**, desde a importação da base até a identificação de padrões e geração de insights.
+O desenvolvimento deste mini-projeto permitiu aplicar conceitos fundamentais de **manipulação e análise exploratória de dados com Python**, passando pelas etapas de leitura, investigação, limpeza, transformação, análise e exportação dos dados.
 
-Um dos principais aprendizados foi compreender que a limpeza dos dados não deve ser realizada de forma automática. Antes de excluir, substituir ou transformar uma informação, é necessário entender o que ela representa e avaliar o impacto dessa decisão sobre a análise.
+Além da aplicação dos recursos técnicos do Python e do Pandas, o projeto demonstrou a importância de compreender a estrutura e o contexto dos dados antes de tomar decisões de tratamento.
 
-A identificação de duplicatas, valores ausentes e categorias não informadas também demonstrou a importância da **qualidade dos dados** para a obtenção de resultados confiáveis.
+A validação do identificador das compras mostrou, por exemplo, que uma mesma compra pode estar distribuída em diversos registros. Já o tratamento de categorias, duplicatas e datas demonstrou como problemas de qualidade podem interferir na interpretação das informações.
 
-Além disso, a utilização de estatísticas descritivas e agrupamentos permitiu transformar os dados tratados em informações mais fáceis de interpretar, demonstrando como ferramentas como **Python e Pandas** podem apoiar o processo de análise de dados.
+A análise exploratória permitiu transformar os dados originais em uma estrutura mais organizada, consistente e adequada para análises posteriores.

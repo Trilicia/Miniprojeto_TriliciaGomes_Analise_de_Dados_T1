@@ -1,6 +1,15 @@
+import csv
 import pandas as pd
+from datetime import datetime
 
 # Carregando a base de dados e informações iniciais
+with open("Base Varejo.csv", mode="r", encoding="utf-8") as arquivo:
+    leitor_csv = csv.DictReader(arquivo, delimiter=";")
+    primeira_linha = next(leitor_csv)
+
+print("\nPrimeiro registro lido com csv.DictReader:")
+print(primeira_linha)
+
 df = pd.read_csv("Base Varejo.csv", sep=";")
 total_inicial = len(df)
 
@@ -19,12 +28,31 @@ print(df.dtypes)
 print("\nInformações gerais da base:")
 df.info()
 
+#Validação do identificador de compra
+print("\nQuantidade de identificadores de compra:")
+print(df["CO_ID"].nunique())
+
+print("\nQuantidade de compras únicas:")
+print(df["CO_ID"].head(20))
+
+print("\nQuantidade de registros por compra:")
+print(df.groupby("CO_ID").size().head(20))
+
+# Separação dos registros por identificador de compra
+compras = df.groupby("CO_ID")
+
+print("\nExemplo de registros da compra 1000:")
+print(compras.get_group(1000)[["CO_ID", "CL_ID", "PR_ID", "PR_NOME"]].head(10))
+
 #Limpeza, conversão e padronização de tipos de dados
-df["DATA"] = pd.to_datetime(
-    df["DATA"],
-    format="%d/%m/%Y",
-    errors="coerce"
-)
+def converter_data(valor):
+    try:
+        return datetime.strptime(valor, "%d/%m/%Y")
+    except:
+        return None
+
+df["DATA"] = df["DATA"].apply(converter_data)
+
 print("\nTipo da coluna DATA após conversão:")
 print(df["DATA"].dtype)
 print("\nQuantidade de datas inválidas:")
@@ -59,7 +87,13 @@ print(df.isna().sum())
 
 df = df.drop(columns=["Unnamed: 10", "Unnamed: 11", "Unnamed: 12", "Unnamed: 13"])
 
-df["PR_CAT"] = df["PR_CAT"].replace("#N/D", "NAO INFORMADO")
+def tratar_categoria(valor):
+    if pd.isna(valor) or valor == "#N/D" or valor.strip() == "":
+        return "Sem Categoria"
+    else:
+        return valor
+    
+df["PR_CAT"] = df["PR_CAT"].apply(tratar_categoria)
 print("\nCategorias após tratamento:")
 print(df["PR_CAT"].value_counts())
 
@@ -118,7 +152,7 @@ print(f"2. Foram removidos {duplicatas} registros duplicados.")
 print(f"3. A média do número de filhos é {df['CL_FHL'].mean():.2f}, enquanto a mediana é {df['CL_FHL'].median():.0f}.")
 print("4. O gênero feminino apresenta maior quantidade de registros na base.")
 print("5. ALIMENTOS é a categoria com maior quantidade de registros.")
-print("6. Registros originalmente classificados como #N/D foram mantidos como NAO INFORMADO.")
+print("6. Categorias vazias ou não identificadas foram tratadas como 'Sem Categoria'.")
 
 
 #Exportar base limpa
