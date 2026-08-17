@@ -2,6 +2,7 @@ import pandas as pd
 
 # Carregando a base de dados e informações iniciais
 df = pd.read_csv("Base Varejo.csv", sep=";")
+total_inicial = len(df)
 
 print("Número de registros:", df.shape[0])
 print("Número de colunas:", df.shape[1])
@@ -62,8 +63,10 @@ df["PR_CAT"] = df["PR_CAT"].replace("#N/D", "NAO INFORMADO")
 print("\nCategorias após tratamento:")
 print(df["PR_CAT"].value_counts())
 
+duplicatas = df.duplicated().sum()
+
 print("\nQuantidade de registros duplicados:")
-print(df.duplicated().sum())
+print(duplicatas)
 
 print("\nExemplos de registros duplicados:")
 print(df[df.duplicated(keep=False)].head(10))
@@ -71,7 +74,8 @@ print(df[df.duplicated(keep=False)].head(10))
 print("\nRegistros antes da remoção:", len(df))
 
 df = df.drop_duplicates()
-
+total_final = len(df)
+percentual_duplicatas = (duplicatas / total_inicial) * 100
 print("Registros após a remoção:", len(df))
 
 
@@ -96,7 +100,29 @@ print(df.groupby("PR_CAT").size().sort_values(ascending=False))
 print("\nQuantidade de registros por gênero e categoria:")
 print(df.groupby(["CL_GENERO", "PR_CAT"]).size())
 
+
+#Dados para sprint 5
+print("\n" + "=" * 50)
+print("RELATÓRIO FINAL - ANÁLISE DA BASE VAREJO")
+print("=" * 50)
+
+print("\nResumo da limpeza:")
+print("Registros iniciais:", total_inicial)
+print("Registros finais:", total_final)
+print("Duplicatas removidas:", duplicatas)
+print(f"Percentual de duplicatas: {percentual_duplicatas:.2f}%")
+
+print("\nPrincipais insights:")
+print("1. Foram identificadas e removidas 4 colunas totalmente vazias.")
+print(f"2. Foram removidos {duplicatas} registros duplicados.")
+print(f"3. A média do número de filhos é {df['CL_FHL'].mean():.2f}, enquanto a mediana é {df['CL_FHL'].median():.0f}.")
+print("4. O gênero feminino apresenta maior quantidade de registros na base.")
+print("5. ALIMENTOS é a categoria com maior quantidade de registros.")
+print("6. Registros originalmente classificados como #N/D foram mantidos como NAO INFORMADO.")
+
+
 #Exportar base limpa
 df.to_csv("df_limpo.csv", sep=";", index=False)
 
 print("\nBase limpa exportada com sucesso!")
+
