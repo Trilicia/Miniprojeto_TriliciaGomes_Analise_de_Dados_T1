@@ -95,3 +95,8 @@ print(df.groupby("PR_CAT").size().sort_values(ascending=False))
 
 print("\nQuantidade de registros por gênero e categoria:")
 print(df.groupby(["CL_GENERO", "PR_CAT"]).size())
+
+#Exportar base limpa
+df.to_csv("df_limpo.csv", sep=";", index=False)
+
+print("\nBase limpa exportada com sucesso!")
